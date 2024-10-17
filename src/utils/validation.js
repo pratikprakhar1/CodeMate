@@ -9,6 +9,30 @@ const validateSignUpData = (req)=>{
         throw new Error("Please enter a strong Password!");
     }
 };
+const validateEditProfileData = (req)=>{
+    const allowedEditFields = [
+        "firstName",
+        "lastName",
+        "emailId",
+        "photoUrl",
+        "gender",
+        "age",
+        "about",
+        "skills"
+    ];
+    const data = req.body;
+    const isEditAllowed = Object.keys(data).every((k)=> allowedEditFields.includes(k));
+    if(!isEditAllowed){
+        throw new Error("Invalid Edit request");
+    }
+    if(data?.skills.length>10){
+        throw new Error("Skills can't be more than 10");
+    }
+    if(data?.about.length>50){
+        throw new Error("About can't be more than 50");
+    }
+}
 module.exports = {
-    validateSignUpData
+    validateSignUpData,
+    validateEditProfileData,
 }
