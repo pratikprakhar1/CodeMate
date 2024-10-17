@@ -25,10 +25,10 @@ const validateEditProfileData = (req)=>{
     if(!isEditAllowed){
         throw new Error("Invalid Edit request");
     }
-    if(data?.skills.length>10){
+    if(data.skills?.length>10){
         throw new Error("Skills can't be more than 10");
     }
-    if(data?.about.length>50){
+    if(data.about?.length>50){
         throw new Error("About can't be more than 50");
     }
 }

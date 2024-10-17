@@ -35,11 +35,16 @@ const userSchema = mongoose.Schema({
         type: String,
         //validate only works walie creating not while updating!!!
         //to run it while updating add option(runValidator) in updatefun
-        validate(value){
-            if(!["male","female","others"].includes(value)){
-                throw new Error("Please enter a valid user");
-            }
+        enum :{
+            values : ["male","female","others"],
+            meassage: `{VALUE} is not a valid gender type`
         },
+        // validate(value){
+
+        //     if(!["male","female","others"].includes(value)){
+        //         throw new Error("Please enter a valid user");
+        //     }
+        // },
     },
     photoUrl:{
         type: String
