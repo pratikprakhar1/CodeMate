@@ -3,10 +3,10 @@ const {connectDB}=require('./config/database.js')
 const cookieParser = require('cookie-parser');
 
 
-
 const app = express();
 app.use(express.json());
 app.use(cookieParser());
+app.use(express.urlencoded({ extended: true }));
 
 const authRouter = require ('./routes/auth.js');
 const profileRouter = require ('./routes/profile.js');
