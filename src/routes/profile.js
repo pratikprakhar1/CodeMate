@@ -3,6 +3,7 @@ const {userAuth} = require('../middlewares/auth.js');
 const {validateEditProfileData} = require('../utils/validation.js');
 const bcrypt = require('bcrypt');
 const upload = require('../config/fileUploadS3.js');
+const deleteFileFromS3 = require('../config/fileDeleteS3.js');
 
 const singleUpLoader = upload.fields([
     { name: 'photoUrl', maxCount: 1 }
@@ -48,17 +49,23 @@ profileRouter.patch('/profile/photo',userAuth,async (req,res)=>{
         }
         try {
             const loggedInUser = req.user;
-            const imageUrl = req.files && req.files['photoUrl']? req.files['photoUrl'][0].location : undefined;
-            if(imageUrl!=undefined){
-                loggedInUser.photoUrl=imageUrl;
-            }else{
-                throw new Error("Please insert a profile photo to be updated");
+            const oldPhotoUrl = loggedInUser.photoUrl;
+            const imageUrl = req.files && req.files['photoUrl'] ? req.files['photoUrl'][0].location : undefined;
+      
+            if (imageUrl) {
+              if (oldPhotoUrl) {
+                const oldFileKey = oldPhotoUrl.split('/').pop();
+                await deleteFileFromS3(oldFileKey);
+              }
+              loggedInUser.photoUrl = imageUrl;
+            } else {
+              throw new Error("Please insert a profile photo to be updated");
             }
-
+      
             await loggedInUser.save();
             res.json({
-                message: `${loggedInUser.firstName}, your profile edit succeessful!!!`,
-                data: loggedInUser
+              message: `${loggedInUser.firstName}, your profile edit was successful!!!`,
+              data: loggedInUser,
             });
         } catch (err) {
             return res.status(400).json({
